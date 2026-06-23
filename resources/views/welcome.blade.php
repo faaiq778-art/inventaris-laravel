@@ -1,165 +1,109 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Product Inventory</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: radial-gradient(circle at top left, #e0f2fe, #eef2ff 40%, #f8fafc 80%);
-        }
-        main {
-            flex: 1;
-        }
-        .hero-title {
-            font-size: 2.6rem;
-            font-weight: 800;
-            letter-spacing: 0.02em;
-        }
-        .hero-subtitle {
-            font-size: 1rem;
-        }
-        .hero-card {
-            border-radius: 1rem;
-        }
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.9rem;
-            border-radius: 999px;
-            font-size: 0.8rem;
-            background-color: rgba(37, 99, 235, 0.08);
-            color: #1d4ed8;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
+@extends('layout.app')
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="{{ route('landing') }}">
-            Product Inventory
+@section('title', 'Product Inventory')
+
+@section('content')
+<div id="hero-wrap">
+  <section id="hero">
+    {{-- TEKS DI POJOK KIRI --}}
+    <div class="hero-text">
+      <div class="hero-kicker">
+        <span>Baru</span>
+        <p>Dashboard stok rapi untuk bisnis berkembang</p>
+      </div>
+
+      <h1 class="hero-title">
+        Kelola stok tanpa spreadsheet yang bikin pusing.
+      </h1>
+
+      <p class="hero-subtitle">
+        Produk Inventory membantu mencatat stok, pesanan, dan laporan penjualan
+        dalam satu tampilan yang rapi dan mudah dipahami tim.
+      </p>
+
+      <div class="hero-ctas">
+        {{-- wajib login dulu --}}
+        <a href="{{ route('login') }}" class="btn-primary-cta">
+            Mulai Kelola Stok Sekarang
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        {{-- wajib login dulu --}}
+        <a href="{{ route('login') }}" class="btn-outline-cta">
+            Lihat Riwayat Stok
+        </a>
+      </div>
 
-        <div class="collapse navbar-collapse justify-content-end" id="mainNavbar">
-            @guest
-                <ul class="navbar-nav align-items-center">
-                    <li class="nav-item me-2">
-                        <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm">
-                            Sign In
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-sm">
-                            Sign Up
-                        </a>
-                    </li>
-                </ul>
-            @else
-                <ul class="navbar-nav align-items-center">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                           data-bs-toggle="dropdown">
-                            <span class="rounded-circle bg-secondary d-inline-flex justify-content-center align-items-center me-2"
-                                  style="width: 28px; height: 28px;">
-                                <span class="text-white" style="font-size: 0.8rem;">
-                                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
-                                </span>
-                            </span>
-                            <span style="font-size: 0.9rem;">
-                                {{ auth()->user()->email ?? 'user@example.com' }}
-                            </span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{{ route('products.index') }}">Kelola Produk</a></li>
-                            <li><a class="dropdown-item" href="{{ route('stock-movements.index') }}">Riwayat Stok</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger">Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            @endguest
+      <p class="hero-note">
+        <strong>5 menit</strong> setup awal • <strong>Tanpa kartu kredit</strong> untuk uji coba
+      </p>
+    </div>
+
+    {{-- KARTU RINGKASAN STOK --}}
+    <aside class="hero-card">
+      <div class="hero-card-header">
+        <span>Ringkasan Stok Hari Ini</span>
+        <span class="badge-live">
+          <span class="dot-live"></span>
+          Live update
+        </span>
+      </div>
+
+      <div class="hero-metric-grid">
+        <div class="metric">
+          <div class="metric-label">Produk aktif</div>
+          <div class="metric-value">128 item</div>
         </div>
-    </div>
-</nav>
-
-<main class="py-5">
-    <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6">
-                <div class="pill mb-3">
-                    Sistem Inventaris • Realtime Monitoring
-                </div>
-
-                <h1 class="hero-title mb-3">
-                    Pantau stok barang
-                    <br>
-                    secara cepat dan akurat.
-                </h1>
-
-                <p class="hero-subtitle text-muted mb-4">
-                    Aplikasi inventaris berbasis web untuk mencatat barang masuk & keluar,
-                    memantau stok secara realtime, dan memberikan notifikasi ketika stok
-                    menyentuh batas minimal.
-                </p>
-
-                <ul class="text-muted mb-4">
-                    <li>Pencatatan master data barang yang terpusat.</li>
-                    <li>Transaksi stok masuk & keluar dengan riwayat lengkap.</li>
-                    <li>Indikator stok minimal di dashboard agar tidak kehabisan barang.</li>
-                </ul>
-
-                <div class="d-flex flex-wrap gap-2">
-                    <a href="{{ route('dashboard') }}" class="btn btn-primary">
-                        Masuk Dashboard
-                    </a>
-                    <a href="{{ route('stock-movements.index') }}" class="btn btn-outline-secondary">
-                        Lihat Riwayat Stok
-                    </a>
-                </div>
-            </div>
-
-            <div class="col-lg-6">
-                <div class="card shadow-sm hero-card">
-                    <div class="card-header bg-primary text-white">
-                        Ringkasan Stok Hari Ini
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-2">• Monitoring stok per barang.</p>
-                        <p class="mb-2">• Riwayat transaksi masuk & keluar.</p>
-                        <p class="mb-2">• Notifikasi stok minimal.</p>
-                        <hr>
-                        <p class="mb-0 text-muted" style="font-size: 0.9rem;">
-                            Gunakan tombol di atas untuk langsung masuk ke dashboard atau
-                            melihat histori stok di gudang.
-                        </p>
-                    </div>
-                </div>
-            </div>
+        <div class="metric">
+          <div class="metric-label">Akan habis</div>
+          <div class="metric-value">9 item</div>
         </div>
-    </div>
-</main>
+        <div class="metric">
+          <div class="metric-label">Pesanan hari ini</div>
+          <div class="metric-value">32 transaksi</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Nilai stok</div>
+          <div class="metric-value">Rp 87.500.000</div>
+        </div>
+      </div>
+    </aside>
+  </section>
+</div>
 
-<footer class="py-3 bg-dark text-white-50">
-    <div class="container text-center" style="font-size: 0.85rem;">
-        © 2025 Product Inventory
+<section class="pi-features" id="features">
+  <div class="pi-features-inner">
+    <div class="pi-feature-col">
+      <h3>Inventaris</h3>
+      <ul>
+        <li>Daftar produk lengkap.</li>
+        <li>Stok per gudang.</li>
+        <li>Stok minimal & peringatan.</li>
+      </ul>
     </div>
-</footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <div class="pi-feature-col">
+      <h3>Transaksi</h3>
+      <ul>
+        <li>Barang masuk & keluar.</li>
+        <li>Riwayat pergerakan stok.</li>
+      </ul>
+    </div>
+
+    <div class="pi-feature-col">
+      <h3>Laporan</h3>
+      <ul>
+        <li>Ringkasan stok harian.</li>
+        <li>Laporan penjualan per produk.</li>
+      </ul>
+    </div>
+
+    <div class="pi-feature-col">
+      <h3>Pengaturan</h3>
+      <ul>
+        <li>Pengguna & hak akses.</li>
+        <li>Notifikasi stok menipis.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+@endsection
